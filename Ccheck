@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char buffer[10];
+    strcpy(buffer, "This string is too long!"); // Overwrites memory beyond buffer size
+    printf("%s\n", buffer);
+    return 0;
+}
+
+
+#include <stdio.h>
+
+int main() {
+    int arr[3] = {1, 2, 3};
+    printf("Out-of-bounds read: %d\n", arr[5]); // Reading beyond allocated memory
+    return 0;
+}
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int *ptr = (int *)malloc(sizeof(int));
+    *ptr = 10;
+    free(ptr);
+    printf("Use after free: %d\n", *ptr); // Undefined behavior
+    return 0;
+}
+
+
+#include <stdio.h>
+#include <string.h>
+
+void vulnerable_function(char *input) {
+    char buffer[10];
+    strcpy(buffer, input); // No bounds checking
+    printf("%s\n", buffer);
+}
+
+int main() {
+    char large_input[] = "This string is way too long!";
+    vulnerable_function(large_input);
+    return 0;
+}
+
+
+#include <stdio.h>
+
+int main() {
+    int *ptr = NULL;
+    printf("Dereferencing NULL: %d\n", *ptr); // Crash
+    return 0;
+}
+
+
+#include <stdio.h>
+#include <limits.h>
+
+int main() {
+    int max = INT_MAX;
+    int result = max + 1; // Integer overflow
+    printf("Integer Overflow: %d\n", result);
+    return 0;
+}
+
+
