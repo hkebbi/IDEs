@@ -1,0 +1,7 @@
+FROM ubuntu:18.04
+RUN apt-get update && apt-get install -y \
+nginx \
+openssh-server
+COPY ./app /app
+WORKDIR /app
+CMD ["nginx", "-g", "daemon off;"]
