@@ -1,0 +1,6 @@
+@GetMapping("/user")
+public User getUserDetails(HttpServletRequest request) {
+String username = request.getParameter("username");
+String query = "SELECT * FROM users WHERE username = '" + username + "'";
+return jdbcTemplate.queryForObject(query, User.class);
+}
