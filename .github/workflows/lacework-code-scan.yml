@@ -31,7 +31,7 @@ jobs:
         run: lacework sca scan ./ -f sarif -o lacework-code.sarif
 
       - name: Upload SARIF Report
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: lacework-code.sarif
 
