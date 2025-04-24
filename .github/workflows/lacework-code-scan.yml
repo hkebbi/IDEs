@@ -1,0 +1,70 @@
+name: Full CI/CD with Lacework Security
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  security-events: write
+
+jobs:
+  sca_sast_scan:
+    name: Code Security Scan (SCA/SAST)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Lacework CLI
+        run: |
+          curl https://raw.githubusercontent.com/lacework/go-sdk/main/cli/install.sh | bash
+          lacework configure -a ${{ secrets.LW_ACCOUNT }} -k ${{ secrets.LW_API_KEY }} -s ${{ secrets.LW_API_SECRET }} --noninteractive
+          lacework component install sca
+
+      - name: Run Lacework Code Scan
+        run: lacework sca scan ./ -f sarif -o lacework-code.sarif
+
+      - name: Upload SARIF Report
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: lacework-code.sarif
+
+  docker_build_and_scan:
+    name: Docker Build & Inline Scan
+    runs-on: ubuntu-latest
+    needs: sca_sast_scan
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Registry
+        run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login your-registry.com -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
+
+      - name: Build Docker Image
+        run: |
+          docker build -t your-registry.com/myapp:latest .
+          docker tag your-registry.com/myapp:latest your-registry.com/myapp:${{ github.sha }}
+
+      - name: Install Lacework CLI & Inline Scanner
+        run: |
+          curl https://raw.githubusercontent.com/lacework/go-sdk/main/cli/install.sh | bash
+          lacework configure -a ${{ secrets.LW_ACCOUNT }} -k ${{ secrets.LW_API_KEY }} -s ${{ secrets.LW_API_SECRET }} --noninteractive
+          lacework component install inline_scanner
+
+      - name: Inline Scan Docker Image
+        run: lacework inline-scan docker your-registry.com/myapp:latest
+
+      - name: Push Docker Image
+        run: |
+          docker push your-registry.com/myapp:latest
+          docker push your-registry.com/myapp:${{ github.sha }}
