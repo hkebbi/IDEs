@@ -34,7 +34,8 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: lacework-code.sarif
-
+          token: ${{ secrets.PAT_TOKEN }}
+          
   docker_build_and_scan:
     name: Docker Build & Inline Scan
     runs-on: ubuntu-latest
