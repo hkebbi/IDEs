@@ -36,8 +36,7 @@ jobs:
 
       # Step 3: Run the Lacework SCA scan on the source branch and save the output 
       - name: Run Lacework SCA Scan on Source Branch 
-        run: lacework sca scan ./ -f lw-json -o /tmp/lacework-scan-target.json --save-results
-
+        run: lacework sca scan ./ -f lw-json -o /tmp/lacework-scan-source.json --save-results
         # Scan the source branch code, output in 'lw-json' format, and save to /tmp/lacework-scan-source.json 
 
       # Step 4: Check out the target branch of the pull request 
