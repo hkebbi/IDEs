@@ -1,0 +1,30 @@
+# ---- Lacework agent (datacollector) + Cluster Collector ----
+# Namespace choice: "lacework" is common, but you can use another. Just keep
+# Helm's -n <namespace> consistent and create it first.
+
+laceworkConfig:
+  serverUrl: https://lwintseemea-eu.lacework.net
+  # Maps to Terraform: lacework_cluster_name = "My-K8s-Cluster"
+  kubernetesCluster: "hkeksfrankfurt"
+  # Optional environment tag for UI filtering
+  env: "prod"
+
+# Typical to allow scheduling even on tainted nodes
+tolerations:
+  - operator: Exists
+
+# Cluster Collector (KSPM) — this is Terraform's enable_cluster_agent = true
+clusterAgent:
+  enable: true
+  clusterRegion: eu-central-1
+  # Optional tuning knobs:
+  # initialDelayMins: 1
+  # scrapeIntervalMins: 60
+  # proxyUrl: http://your.proxy:3128
+
+# If you use NetworkPolicies, allow egress to Lacework + K8s API server.
+# networkPolicy:
+#   enabled: true
+#   egress:
+#     - to:  # add your API server CIDR or kube-dns as needed
+

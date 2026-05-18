@@ -1,0 +1,28 @@
+laceworkConfig:
+  serverUrl: https://lwintseemea-eu.lacework.net
+  kubernetesCluster: hkeksfrankfurt
+  env: poc
+  # proxyUrl: http://your.proxy:3128     # <— uncomment to enable
+
+# Optional proxy via env vars instead of proxyUrl:
+# extraEnv:
+#   - name: HTTP_PROXY
+#     value: http://your.proxy:3128
+#   - name: HTTPS_PROXY
+#     value: http://your.proxy:3128
+#   - name: NO_PROXY
+#     value: 169.254.169.254,127.0.0.1,localhost,.svc,.cluster.local
+
+# Keep toleration so it schedules on tainted nodes
+tolerations:
+  - operator: Exists
+
+# KSPM / Cluster Agent
+clusterAgent:
+  enable: true
+  clusterName: hkeksfrankfurt
+  clusterType: eks
+  clusterRegion: eu-central-1
+  # initialDelayMins: 1         # optional
+  # scrapeIntervalMins: 60      # optional
+  # proxyUrl: http://your.proxy:3128  # optional, only if required
